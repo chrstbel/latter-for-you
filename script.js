@@ -37,14 +37,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const heart = document.querySelector("#solid-heart");
-    
     const msg_container = document.querySelector("#message-container");
-    
     const md = window.markdownit({html: true});
 
     loadMessage(md);
 
     heart.addEventListener("click", function() {
+        console.log("Heart clicked"); // Debugging
         if (tempdata.did_open) {
             return;
         }
@@ -63,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 msg_container.classList.add("overflow-y-scroll");
             }
             
-            // Menambahkan debounce pada event resize
             let resizeTimeout;
             window.onresize = function() {
                 clearTimeout(resizeTimeout);
@@ -83,5 +81,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 1450);
     });
-
 });
