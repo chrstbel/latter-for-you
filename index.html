@@ -1,3 +1,13 @@
+<!--
+
+    ©️ 2023 upio
+
+    written by upio inspired by a tiktok video 
+
+    UPDATE:
+    - old code was trash so i am rewriting for fun
+-->
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -36,7 +46,7 @@
         <script src="script.js"></script>
     </head>
     <body>
-        <audio id="background-music" src="nothing.mp3" autoplay loop></audio>
+        <audio id="background-music" src="path/to/your/song.mp3" preload="auto"></audio>
         <div class="flex justify-center items-center flex-col w-[100vw] h-[100vh]">
             <div id="message-container" class="flex-col items-center hidden h-0 overflow-y-hidden max-h-[80vh] max-w-[50vw] max-md:max-w-[70vw] max-sm:max-w-[80vw] max-sm:max-h-[80vh] py-5">
                 <div class="w-[90%] mb-auto mt-auto">
@@ -48,5 +58,85 @@
                 <i id="solid-heart" class="fa-solid fa-heart fa-beat fa-2x" style="color: #ff0000;"></i>
             </div>
         </div>
+
+        <script>
+            const local_dev_cors_message = `<br><br><strong>Possible Fixes:</strong><br>This might be a problem with <i>CORS</i> policy, to fix please host the website on any hosting software like <a href="https://vercel.com/" target="_blank">Vercel</a>, Github Pages, <a href="https://cloudflare.com/" target="_blank">Cloudflare Pages</a> etc.`
+
+            // markdown it on top (real)
+            function loadMessage(md) {
+                const message = document.querySelector("#message");
+
+                fetch("message.txt")
+                    .then(response => response.text())
+                    .then(data => {
+                        message.innerHTML = md.render(data);
+                    })
+                    .catch(error => {
+                        if (document.location.hostname === "localhost" || document.location.href.startsWith("file://")) {
+                            message.innerHTML = `An error occurred while fetching the message. <code>${error}</code>${local_dev_cors_message}`;
+                            return;
+                        }
+                        
+                        message.innerHTML = `An error occurred while fetching the message. <code>${error}</code>`;
+                    });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                let tempdata = {
+                    "did_open": false
+                }
+
+                const heart = document.querySelector("#solid-heart");
+                const msg_container = document.querySelector("#message-container");
+                const backgroundMusic = document.querySelector("#background-music");
+                
+                const md = window.markdownit({html: true});
+
+                loadMessage(md);
+
+                heart.addEventListener("click", function() {
+                    if (tempdata.did_open) {
+                        return;
+                    }
+                    tempdata.did_open = true;
+
+                    // Play the background music
+                    backgroundMusic.play();
+
+                    msg_container.classList.remove("hidden");
+                    msg_container.classList.add("flex");
+                    
+                    let auto_css_height = msg_container.scrollHeight + 20; // 20 extra padding
+                    msg_container.classList.remove("h-0");
+                    msg_container.classList.add(`h-[${auto_css_height}px]`);
+                    
+                    setTimeout(() => {
+                        if (msg_container.scrollHeight > msg_container.clientHeight) {
+                            msg_container.classList.remove("overflow-y-hidden");
+                            msg_container.classList.add("overflow-y-scroll");
+                        }
+                        
+                        // Menambahkan debounce pada event resize
+                        let resizeTimeout;
+                        window.onresize = function() {
+                            clearTimeout(resizeTimeout);
+                            resizeTimeout = setTimeout(() => {
+                                if (msg_container.scrollHeight > msg_container.clientHeight) {
+                                    msg_container.classList.remove("overflow-y-hidden");
+                                    msg_container.classList.add("overflow-y-scroll");
+                                } else {
+                                    msg_container.classList.remove("overflow-y-scroll");
+                                    msg_container.classList.add("overflow-y-hidden");
+                                }
+
+                                msg_container.classList.remove(`h-[${auto_css_height}px]`);
+                                auto_css_height = msg_container.scrollHeight + 20;
+                                msg_container.classList.add(`h-[${auto_css_height}px]`);
+                            }, 100);
+                        }
+                    }, 1450);
+                });
+            });
+        </script>
     </body>
 </html>
