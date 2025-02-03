@@ -1,130 +1,127 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Latter</title>
-        
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <title>Latter</title>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.2/markdown-it.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.2/markdown-it.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
 
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
 
-            body {
-                font-family: 'Inter', sans-serif;
-            }
+        h1, h2, h3, h4, h5, h6 {
+            margin: 0;
+        }
 
-            h1, h2, h3, h4, h5, h6 {
-                margin: 0;
-            }
+        #message-container {
+            background-color: oklch(78.33% 0.108 326.54);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.455);
+            transition: height 1.5s ease-in-out;
+        }
+    </style>
 
-            #message-container {
-                background-color: oklch(78.33% 0.108 326.54);
-                box-shadow: 0 0 15px rgba(0, 0, 0, 0.455);
-                
-                transition: height 1.5s ease-in-out;
-            }
-        </style>
-
-        <script src="script.js"></script>
-    </head>
-    <body>
-        <audio id="background-music" src="nothing.mp3" preload="auto"></audio>
-        <div class="flex justify-center items-center flex-col w-[100vw] h-[100vh]">
-            <div id="message-container" class="flex-col items-center hidden h-0 overflow-y-hidden max-h-[80vh] max-w-[50vw] max-md:max-w-[70vw] max-sm:max-w-[80vw] max-sm:max-h-[80vh] py-5">
-                <div class="w-[90%] mb-auto mt-auto">
-                    <article id="message" class="prose"></article>
-                </div>
-            </div>
-
-            <div class="heart-container" class="mt-2">
-                <i id="solid-heart" class="fa-solid fa-heart fa-beat fa-2x" style="color: #ff0000;"></i>
+    <script src="script.js"></script>
+</head>
+<body>
+    <audio id="background-music" src="nothing.mp3" preload="auto"></audio>
+    <div class="flex justify-center items-center flex-col w-[100vw] h-[100vh]">
+        <div id="message-container" class="flex-col items-center hidden h-0 overflow-y-hidden max-h-[80vh] max-w-[50vw] max-md:max-w-[70vw] max-sm:max-w-[80vw] max-sm:max-h-[80vh] py-5">
+            <div class="w-[90%] mb-auto mt-auto">
+                <article id="message" class="prose"></article>
             </div>
         </div>
 
-        <script>
-            const local_dev_cors_message = `<br><br><strong>Possible Fixes:</strong><br>This might be a problem with <i>CORS</i> policy, to fix please host the website on any hosting software like <a href="https://vercel.com/" target="_blank">Vercel</a>, Github Pages, <a href="https://cloudflare.com/" target="_blank">Cloudflare Pages</a> etc.`
+        <div class="heart-container" class="mt-2">
+            <i id="solid-heart" class="fa-solid fa-heart fa-beat fa-2x" style="color: #ff0000;"></i>
+        </div>
+    </div>
 
-            // markdown it on top (real)
-            function loadMessage(md) {
-                const message = document.querySelector("#message");
+    <script>
+        const local_dev_cors_message = `<br><br><strong>Possible Fixes:</strong><br>This might be a problem with <i>CORS</i> policy, to fix please host the website on any hosting software like <a href="https://vercel.com/" target="_blank">Vercel</a>, Github Pages, <a href="https://cloudflare.com/" target="_blank">Cloudflare Pages</a> etc.`;
 
-                fetch("message.txt")
-                    .then(response => response.text())
-                    .then(data => {
-                        message.innerHTML = md.render(data);
-                    })
-                    .catch(error => {
-                        if (document.location.hostname === "localhost" || document.location.href.startsWith("file://")) {
-                            message.innerHTML = `An error occurred while fetching the message. <code>${error}</code>${local_dev_cors_message}`;
-                            return;
-                        }
-                        
-                        message.innerHTML = `An error occurred while fetching the message. <code>${error}</code>`;
-                    });
-            }
+        function loadMessage(md) {
+            const message = document.querySelector("#message");
 
-            document.addEventListener('DOMContentLoaded', function() {
-                let tempdata = {
-                    "did_open": false
-                }
-
-                const heart = document.querySelector("#solid-heart");
-                const msg_container = document.querySelector("#message-container");
-                const backgroundMusic = document.querySelector("#background-music");
-                
-                const md = window.markdownit({html: true});
-
-                loadMessage(md);
-
-                heart.addEventListener("click", function() {
-                    if (tempdata.did_open) {
+            fetch("message.txt")
+                .then(response => response.text())
+                .then(data => {
+                    message.innerHTML = md.render(data);
+                })
+                .catch(error => {
+                    if (document.location.hostname === "localhost" || document.location.href.startsWith("file://")) {
+                        message.innerHTML = `An error occurred while fetching the message. <code>${error}</code>${local_dev_cors_message}`;
                         return;
                     }
-                    tempdata.did_open = true;
-
-                    // Play the background music
-                    backgroundMusic.play();
-
-                    msg_container.classList.remove("hidden");
-                    msg_container.classList.add("flex");
                     
-                    let auto_css_height = msg_container.scrollHeight + 20; // 20 extra padding
-                    msg_container.classList.remove("h-0");
-                    msg_container.classList.add(`h-[${auto_css_height}px]`);
-                    
-                    setTimeout(() => {
-                        if (msg_container.scrollHeight > msg_container.clientHeight) {
-                            msg_container.classList.remove("overflow-y-hidden");
-                            msg_container.classList.add("overflow-y-scroll");
-                        }
-                        
-                        // Menambahkan debounce pada event resize
-                        let resizeTimeout;
-                        window.onresize = function() {
-                            clearTimeout(resizeTimeout);
-                            resizeTimeout = setTimeout(() => {
-                                if (msg_container.scrollHeight > msg_container.clientHeight) {
-                                    msg_container.classList.remove("overflow-y-hidden");
-                                    msg_container.classList.add("overflow-y-scroll");
-                                } else {
-                                    msg_container.classList.remove("overflow-y-scroll");
-                                    msg_container.classList.add("overflow-y-hidden");
-                                }
-
-                                msg_container.classList.remove(`h-[${auto_css_height}px]`);
-                                auto_css_height = msg_container.scrollHeight + 20;
-                                msg_container.classList.add(`h-[${auto_css_height}px]`);
-                            }, 100);
-                        }
-                    }, 1450);
+                    message.innerHTML = `An error occurred while fetching the message. <code>${error}</code>`;
                 });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let tempdata = {
+                "did_open": false
+            }
+
+            const heart = document.querySelector("#solid-heart");
+            const msg_container = document.querySelector("#message-container");
+            const backgroundMusic = document.querySelector("#background-music");
+            
+            const md = window.markdownit({html: true});
+
+            loadMessage(md);
+
+            heart.addEventListener("click", function() {
+                console.log("Heart clicked"); // Debugging
+                if (tempdata.did_open) {
+                    return;
+                }
+                tempdata.did_open = true;
+
+                // Play the background music
+                backgroundMusic.play();
+
+                msg_container.classList.remove("hidden");
+                msg_container.classList.add("flex");
+                
+                let auto_css_height = msg_container.scrollHeight + 20; // 20 extra padding
+                msg_container.classList.remove("h-0");
+                msg_container.classList.add(`h-[${auto_css_height}px]`);
+                
+                setTimeout(() => {
+                    if (msg_container.scrollHeight > msg_container.clientHeight) {
+                        msg_container.classList.remove("overflow-y-hidden");
+                        msg_container.classList.add("overflow-y-scroll");
+                    }
+                    
+                    let resizeTimeout;
+                    window.onresize = function() {
+                        clearTimeout(resizeTimeout);
+                        resizeTimeout = setTimeout(() => {
+                            if (msg_container.scrollHeight > msg_container.clientHeight) {
+                                msg_container.classList.remove("overflow-y-hidden");
+                                msg_container.classList.add("overflow-y-scroll");
+                            } else {
+                                msg_container.classList.remove("overflow-y-scroll");
+                                msg_container.classList.add("overflow-y-hidden");
+                            }
+
+                            msg_container.classList.remove(`h-[${auto_css_height}px]`);
+                            auto_css_height = msg_container.scrollHeight + 20;
+                            msg_container.classList.add(`h-[${auto_css_height}px]`);
+                        }, 100);
+                    }
+                }, 1450);
             });
-        </script>
-    </body>
+        });
+    </script>
+</body>
 </html>
