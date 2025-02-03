@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const heart = document.querySelector("#solid-heart");
     const msg_container = document.querySelector("#message-container");
+    const backgroundMusic = document.querySelector("#background-music");
+    
     const md = window.markdownit({html: true});
 
     loadMessage(md);
@@ -48,7 +50,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         tempdata.did_open = true;
-        
+
+        // Play the background music
+        backgroundMusic.play().then(() => {
+            console.log("Music is playing");
+        }).catch((error) => {
+            console.error("Error playing music:", error);
+            alert("Failed to play music. Please check your browser settings.");
+        });
+
         msg_container.classList.remove("hidden");
         msg_container.classList.add("flex");
         
